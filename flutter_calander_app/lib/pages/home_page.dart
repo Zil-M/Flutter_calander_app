@@ -4,7 +4,7 @@ import 'package:flutter_calander_app/pages/today/today_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import 'add_calander/add_page.dart';
+import 'add_calander/add_calander_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -53,7 +53,7 @@ class _HomePageState extends State<HomePage> {
             CupertinoButton(
               onPressed: () => _onCurrentPage(0),
               child: Icon(
-                CupertinoIcons.checkmark,
+                CupertinoIcons.time,
                 color: _currentIndex == 0
                     ? MyColors.primaryColor
                     : Colors.grey[350],
@@ -62,7 +62,7 @@ class _HomePageState extends State<HomePage> {
             CupertinoButton(
               onPressed: () => _onCurrentPage(1),
               child: Icon(
-                CupertinoIcons.text_badge_checkmark,
+                CupertinoIcons.settings_solid,
                 color: _currentIndex == 1
                     ? MyColors.primaryColor
                     : Colors.grey[350],
@@ -83,7 +83,7 @@ class _HomePageState extends State<HomePage> {
   void _onAddCalander() {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (contxt) => const AddCalanderPage()),
+      MaterialPageRoute(builder: (contxt) => AddCalanderPage()),
     );
   }
 }

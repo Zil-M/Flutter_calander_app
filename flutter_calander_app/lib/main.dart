@@ -13,8 +13,8 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
-      theme: MyTheme.DarkTheme,
+      title: 'Flutter Calander App',
+      theme: MyTheme.lightTheme,
       home: const HomePage(),
       builder: (context, child) => MediaQuery(
         data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
