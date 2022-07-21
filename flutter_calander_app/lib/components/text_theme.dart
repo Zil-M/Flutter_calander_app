@@ -8,6 +8,7 @@ class MyTheme {
         scaffoldBackgroundColor: Colors.white,
         splashColor: Colors.white,
         textTheme: _textTheme,
+        appBarTheme: _appBarTheme,
         brightness: Brightness.light,
       );
 
@@ -18,6 +19,14 @@ class MyTheme {
         textTheme: _textTheme,
         brightness: Brightness.dark,
       );
+
+  static const AppBarTheme _appBarTheme = AppBarTheme(
+    backgroundColor: Colors.white,
+    iconTheme: IconThemeData(
+      color: MyColors.primaryColor,
+    ),
+    elevation: 0,
+  );
 
   static const TextTheme _textTheme = TextTheme(
     headline4: TextStyle(
