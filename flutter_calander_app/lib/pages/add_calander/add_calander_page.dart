@@ -46,14 +46,64 @@ class _AddCalanderPageState extends State<AddCalanderPage> {
                     child: CupertinoButton(
                       padding: _pickedImage == null ? null : EdgeInsets.zero,
                       onPressed: () {
-                        ImagePicker()
-                            .pickImage(source: ImageSource.gallery)
-                            .then((xfile) {
-                          if (xfile == null) return;
-                          setState(() {
-                            _pickedImage = File(xfile.path);
-                          });
-                        });
+                        showModalBottomSheet(
+                            context: context,
+                            builder: (context) {
+                              return SafeArea(
+                                child: Padding(
+                                  padding: pagePadding,
+                                  child: Container(
+                                    child: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          TextButton(
+                                              onPressed: () {
+                                                ImagePicker()
+                                                    .pickImage(
+                                                        source:
+                                                            ImageSource.camera)
+                                                    .then((xfile) {
+                                                  if (xfile != null) {
+                                                    setState(() {
+                                                      _pickedImage =
+                                                          File(xfile.path);
+                                                    });
+                                                  }
+                                                  Navigator.maybePop(context);
+                                                });
+                                              },
+                                              child: const Text('카메라로 촬영')),
+                                          TextButton(
+                                              onPressed: () {
+                                                ImagePicker()
+                                                    .pickImage(
+                                                        source:
+                                                            ImageSource.gallery)
+                                                    .then((xfile) {
+                                                  if (xfile != null) {
+                                                    setState(() {
+                                                      _pickedImage =
+                                                          File(xfile.path);
+                                                    });
+                                                  }
+                                                  Navigator.maybePop(context);
+                                                });
+                                              },
+                                              child: const Text('앨범에서 가져오기')),
+                                        ]),
+                                  ),
+                                ),
+                              );
+                            });
+
+                        // ImagePicker()
+                        //     .pickImage(source: ImageSource.gallery)
+                        //     .then((xfile) {
+                        //   if (xfile == null) return;
+                        //   setState(() {
+                        //     _pickedImage = File(xfile.path);
+                        //   });
+                        // });
                       },
                       child: _pickedImage == null
                           ? const Icon(
