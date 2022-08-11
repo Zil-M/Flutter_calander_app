@@ -2,16 +2,20 @@ import 'dart:io';
 import 'package:flutter_calander_app/components/constants.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_calander_app/components/my_page_route.dart';
+import 'package:flutter_calander_app/pages/add_calander/add_alarm_page.dart';
 import 'package:image_picker/image_picker.dart';
 
 class AddCalanderPage extends StatefulWidget {
+  const AddCalanderPage({Key? key}) : super(key: key);
+
   @override
   State<AddCalanderPage> createState() => _AddCalanderPageState();
 }
 
 class _AddCalanderPageState extends State<AddCalanderPage> {
   final _nameController = TextEditingController();
-  File? _pickedImage;
+  File? _calenderImage;
 
   @override
   void dispose() {
@@ -41,81 +45,10 @@ class _AddCalanderPageState extends State<AddCalanderPage> {
                 ),
                 const SizedBox(height: largeSpace),
                 Center(
-                  child: CircleAvatar(
-                    radius: 40,
-                    child: CupertinoButton(
-                      padding: _pickedImage == null ? null : EdgeInsets.zero,
-                      onPressed: () {
-                        showModalBottomSheet(
-                            context: context,
-                            builder: (context) {
-                              return SafeArea(
-                                child: Padding(
-                                  padding: pagePadding,
-                                  child: Container(
-                                    child: Column(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          TextButton(
-                                              onPressed: () {
-                                                ImagePicker()
-                                                    .pickImage(
-                                                        source:
-                                                            ImageSource.camera)
-                                                    .then((xfile) {
-                                                  if (xfile != null) {
-                                                    setState(() {
-                                                      _pickedImage =
-                                                          File(xfile.path);
-                                                    });
-                                                  }
-                                                  Navigator.maybePop(context);
-                                                });
-                                              },
-                                              child: const Text('카메라로 촬영')),
-                                          TextButton(
-                                              onPressed: () {
-                                                ImagePicker()
-                                                    .pickImage(
-                                                        source:
-                                                            ImageSource.gallery)
-                                                    .then((xfile) {
-                                                  if (xfile != null) {
-                                                    setState(() {
-                                                      _pickedImage =
-                                                          File(xfile.path);
-                                                    });
-                                                  }
-                                                  Navigator.maybePop(context);
-                                                });
-                                              },
-                                              child: const Text('앨범에서 가져오기')),
-                                        ]),
-                                  ),
-                                ),
-                              );
-                            });
-
-                        // ImagePicker()
-                        //     .pickImage(source: ImageSource.gallery)
-                        //     .then((xfile) {
-                        //   if (xfile == null) return;
-                        //   setState(() {
-                        //     _pickedImage = File(xfile.path);
-                        //   });
-                        // });
-                      },
-                      child: _pickedImage == null
-                          ? const Icon(
-                              CupertinoIcons.photo_camera_solid,
-                              size: 30,
-                              color: Colors.white,
-                            )
-                          : CircleAvatar(
-                              foregroundImage: FileImage(_pickedImage!),
-                              radius: 40,
-                            ),
-                    ),
+                  child: CalenderImageButton(
+                    changeImageFile: (File? value) {
+                      _calenderImage = value;
+                    },
                   ),
                 ),
                 const SizedBox(height: largeSpace + regularSpace),
@@ -134,6 +67,9 @@ class _AddCalanderPageState extends State<AddCalanderPage> {
                     hintStyle: Theme.of(context).textTheme.bodyText2,
                     contentPadding: textFieldContentPadding,
                   ),
+                  onChanged: (_) {
+                    setState(() {});
+                  },
                 ),
               ],
             ),
@@ -146,7 +82,7 @@ class _AddCalanderPageState extends State<AddCalanderPage> {
           child: SizedBox(
             height: submitButtonHeight,
             child: ElevatedButton(
-              onPressed: () {},
+              onPressed: _nameController.text.isEmpty ? null : _onAddAlarmPage,
               style: ElevatedButton.styleFrom(
                 textStyle: Theme.of(context).textTheme.subtitle1,
               ),
@@ -157,16 +93,30 @@ class _AddCalanderPageState extends State<AddCalanderPage> {
       ),
     );
   }
+
+  void _onAddAlarmPage() {
+    Navigator.push(
+      context,
+      FadePageRoute(
+          page: AddAlarmPage(
+        calenderImage: _calenderImage,
+        calenderName: _nameController.text,
+      )),
+    );
+  }
 }
 
-class CalanderImageButton extends StatefulWidget {
-  const CalanderImageButton({Key? key}) : super(key: key);
+class CalenderImageButton extends StatefulWidget {
+  const CalenderImageButton({Key? key, required this.changeImageFile})
+      : super(key: key);
+
+  final ValueChanged<File?> changeImageFile;
 
   @override
-  State<CalanderImageButton> createState() => _CalanderImageButtonState();
+  State<CalenderImageButton> createState() => _CalenderImageButtonState();
 }
 
-class _CalanderImageButtonState extends State<CalanderImageButton> {
+class _CalenderImageButtonState extends State<CalenderImageButton> {
   File? _pickedImage;
 
   @override
@@ -174,8 +124,8 @@ class _CalanderImageButtonState extends State<CalanderImageButton> {
     return CircleAvatar(
       radius: 40,
       child: CupertinoButton(
-        onPressed: _showBottomSheet,
         padding: _pickedImage == null ? null : EdgeInsets.zero,
+        onPressed: _showModalBottomSheet,
         child: _pickedImage == null
             ? const Icon(
                 CupertinoIcons.photo_camera_solid,
@@ -190,16 +140,14 @@ class _CalanderImageButtonState extends State<CalanderImageButton> {
     );
   }
 
-  void _showBottomSheet() {
+  void _showModalBottomSheet() {
     showModalBottomSheet(
-      context: context,
-      builder: (context) {
-        return PickImageBottomSheet(
-          onPressedCamera: () => _onPressed(ImageSource.camera),
-          onPressedGallery: () => _onPressed(ImageSource.gallery),
-        );
-      },
-    );
+        context: context,
+        builder: (context) {
+          return PickImageBottomSheet(
+              onPressedCamera: () => _onPressed(ImageSource.camera),
+              onPressedGallery: () => _onPressed(ImageSource.gallery));
+        });
   }
 
   void _onPressed(ImageSource source) {
@@ -207,6 +155,7 @@ class _CalanderImageButtonState extends State<CalanderImageButton> {
       if (xfile != null) {
         setState(() {
           _pickedImage = File(xfile.path);
+          widget.changeImageFile(_pickedImage);
         });
       }
       Navigator.maybePop(context);
@@ -219,27 +168,19 @@ class PickImageBottomSheet extends StatelessWidget {
       {Key? key, required this.onPressedCamera, required this.onPressedGallery})
       : super(key: key);
 
-  final VoidCallback onPressedCamera;
-  final VoidCallback onPressedGallery;
+  final VoidCallback? onPressedCamera;
+  final VoidCallback? onPressedGallery;
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Padding(
         padding: pagePadding,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextButton(
-              onPressed: onPressedCamera,
-              child: const Text('카메라로 촬영'),
-            ),
-            TextButton(
-              onPressed: onPressedGallery,
-              child: const Text('앨범에서 가져오기'),
-            ),
-          ],
-        ),
+        child: Column(mainAxisSize: MainAxisSize.min, children: [
+          TextButton(onPressed: onPressedCamera, child: const Text('카메라로 촬영')),
+          TextButton(
+              onPressed: onPressedGallery, child: const Text('앨범에서 가져오기')),
+        ]),
       ),
     );
   }
